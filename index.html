@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capacitación: Protocolo de Manejo y Entrega de Medicamentos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/YOUR_KIT_ID.js" crossorigin="anonymous" defer></script>
+    <style>
+        /* CSS Variables for Brand Styling */
+        :root {
+            --primary: #4CAF50; /* Green - similar to document header */
+            --accent: #FFC107; /* Amber - for highlights */
+            --bg: #F8F8F8; /* Light gray background */
+            --text: #333; /* Dark gray text */
+            --tip-bg: #E8F5E9; /* Lighter green for tips */
+            --border-color: #DDD; /* Light border color */
+            --header-bg: #28a745; /* Darker green for header */
+            --header-text: #FFF; /* White text for header */
+        }
+
+        /* General Body Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 20px 0 0; /* Reducido el padding inferior para dar espacio a la barra */
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000; /* Ensure header is above content */
+        }
+
+        header img {
+            max-width: 80px;
+            height: auto;
+            margin-bottom: 10px;
+            /* TODO: Replace with your actual logo */
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8em;
+            text-transform: uppercase;
+        }
+
+        header p {
+            margin: 5px 0 10px; /* Añadido margen inferior */
+            font-size: 1.1em;
+            font-weight: 300;
+        }
+
+        /* Progress Bar (Moved to be part of the sticky header) */
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            /* border-radius: 5px; No es necesario si está al final del header */
+            /* margin-bottom: 30px; Eliminado ya que está en el header */
+            overflow: hidden;
+            /* position: sticky; Ya no es necesario, el header lo es */
+            /* top: calc(80px + 20px); Eliminado */
+            /* z-index: 999; Eliminado */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-top: 10px; /* Espacio entre el contenido del header y la barra */
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 25px;
+            background-color: var(--primary);
+            /* border-radius: 5px; Eliminado */
+            text-align: center;
+            color: white;
+            line-height: 25px;
+            transition: width 0.4s ease-in-out;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+
+        /* Main Content Area */
+        main {
+            flex-grow: 1;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 20px auto;
+            background-color: #FFF;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Section Styling */
+        section {
+            display: none; /* Hidden by default */
+            padding: 20px 0;
+        }
+
+        section.active {
+            display: block; /* Active section is shown */
+        }
+
+        section h2 {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            font-size: 1.6em;
+        }
+
+        section h3 {
+            color: var(--text);
+            margin-top: 25px;
+            font-size: 1.3em;
+        }
+
+        /* Navigation Buttons */
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .navigation-buttons button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .navigation-buttons button:hover {
+            background-color: #388E3C; /* Darker green on hover */
+        }
+
+        .navigation-buttons button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        /* Flip Cards */
+        .flip-cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            height: 200px;
+            perspective: 1000px; /* For 3D effect */
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden; /* Safari */
+            backface-visibility: hidden;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .flip-card-front {
+            background-color: #f0f0f0;
+            color: var(--text);
+            font-size: 1.1em;
+        }
+
+        .flip-card-front i {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+
+        .flip-card-front h4 {
+            margin: 5px 0;
+            color: var(--primary);
+        }
+
+        .flip-card-back {
+            background-color: var(--primary);
+            color: white;
+            transform: rotateY(180deg);
+            font-size: 0.9em;
+            text-align: left;
+        }
+
+        .flip-card-back p {
+            margin: 0;
+        }
+
+        /* Tip Block */
+        .tip {
+            background-color: var(--tip-bg);
+            border-left: 5px solid var(--accent);
+            padding: 15px 20px;
+            margin: 30px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .tip strong {
+            color: var(--primary);
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        /* Quiz Section */
+        #quiz-section {
+            padding: 20px 0;
+        }
+
+        #quiz-section h2 {
+            text-align: center;
+        }
+
+        .quiz-question, .registration-field { /* Applied to new fields as well */
+            background-color: #f9f9f9;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+        }
+        
+        .registration-field label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .registration-field input[type="text"],
+        .registration-field input[type="date"],
+        .registration-field input[type="time"],
+        .registration-field select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 10px; /* Space below input */
+        }
+
+
+        .quiz-question p {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .quiz-options label {
+            display: block;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .quiz-options input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .quiz-submit-button {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+            display: block;
+            margin: 30px auto 0;
+        }
+
+        .quiz-submit-button:hover {
+            background-color: #FFB300; /* Darker amber on hover */
+        }
+
+        #quiz-feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            display: none; /* Hidden until submission */
+        }
+
+        #quiz-feedback.success {
+            background-color: #D4EDDA;
+            color: #155724;
+            border: 1px solid #C3E6CB;
+        }
+
+        #quiz-feedback.error {
+            background-color: #F8D7DA;
+            color: #721C24;
+            border: 1px solid #F5C6CB;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: #f0f0f0;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 0.9em;
+            margin-top: 40px;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        footer p {
+            margin: 5px 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.5em;
+            }
+
+            header p {
+                font-size: 1em;
+            }
+
+            main {
+                margin: 15px;
+                padding: 15px;
+            }
+
+            section h2 {
+                font-size: 1.4em;
+            }
+
+            section h3 {
+                font-size: 1.1em;
+            }
+
+            .navigation-buttons button {
+                padding: 10px 15px;
+                font-size: 0.9em;
+            }
+
+            .flip-cards-container {
+                grid-template-columns: 1fr; /* Single column on small screens */
+            }
+
+            .flip-card {
+                height: 220px; /* Adjust height for better readability on small screens */
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 15px 0 0; /* Ajustado padding para barra de progreso */
+            }
+
+            header img {
+                max-width: 60px;
+            }
+
+            header h1 {
+                font-size: 1.3em;
+            }
+
+            header p {
+                font-size: 0.9em;
+            }
+
+            main {
+                padding: 10px;
+            }
+
+            section h2 {
+                font-size: 1.2em;
+            }
+
+            .navigation-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .navigation-buttons button {
+                width: 100%;
+            }
+            /* No es necesario ajustar .progress-container top aquí, ya que es parte del header */
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="/logo.png" alt="Logo Hogar Sagrada Familia" onerror="this.onerror=null;this.src='https://placehold.co/80x80/28a745/FFFFFF?text=Logo';">
+        <h1>HOGAR SAGRADA FAMILIA - BOGOTÁ</h1>
+        <p>Capacitación: Protocolo de manejo y entrega de medicamentos</p>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar">
+                0% Completado
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section data-index="0" class="active">
+            <h2>1. Objetivo del Protocolo</h2>
+            <p>Este protocolo tiene como objetivo orientar al personal responsable, incluyendo auxiliares de enfermería y formadores, sobre las acciones que deben desarrollar para el adecuado manejo, almacenamiento, control y entrega de medicamentos a las niñas, y adolescentes atendidas en la institución durante el Proceso Administrativo de Restablecimiento de Derechos (PARD).</p>
+            <div class="tip">
+                <strong>💡 Consejo:</strong> Un objetivo claro es el primer paso para una gestión eficaz. Entender el "por qué" nos ayuda a ejecutar el "cómo" con mayor precisión.
+            </div>
+        </section>
+
+        <section data-index="1">
+            <h2>2. Alcance del Protocolo</h2>
+            <p>Este protocolo aplica a todo el personal involucrado en el manejo de medicamentos. Se centra en el uso ambulatorio de los medicamentos dispensados por las Entidades Administradoras de Planes de Beneficios de Salud (EAPB) y entregados a los cuidadores para su administración.</p>
+            <p>Inicia con la recepción del medicamento y finaliza con su correcta administración o disposición final.</p>
+            <div class="tip">
+                <strong>📌 Importante:</strong> El alcance define los límites y el personal involucrado, asegurando que todos los actores clave comprendan su rol y la cobertura del protocolo.
+            </div>
+        </section>
+
+        <section data-index="2">
+            <h2>3. Definiciones Clave</h2>
+            <p>Comprender estos términos es fundamental para la correcta aplicación del protocolo.</p>
+            <div class="flip-cards-container">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <i class="fas fa-file-alt"></i>
+                            <h4>Anexo de la historia de atención</h4>
+                            <p>(Haz clic para ver el detalle)</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>Registro donde deben quedar documentadas todas las actuaciones o acciones realizadas en el marco del proceso de atención de la beneficiaria, incluyendo registros de atenciones y seguimientos.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <i class="fas fa-check-double"></i>
+                            <h4>Cinco Correctos</h4>
+                            <p>(Haz clic para ver el detalle)</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>Elementos mínimos a verificar antes de administrar un medicamento: Usuario correcto, Medicamento correcto, Dosis correcta, Hora correcta, Vía correcta.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h4>Error de medicación</h4>
+                            <p>(Haz clic para ver el detalle)</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>Cualquier incidente prevenible que pueda causar daño al paciente o resulte en un uso inapropiado de medicamentos.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <i class="fas fa-pills"></i>
+                            <h4>Medicamentos de control especial</h4>
+                            <p>(Haz clic para ver el detalle)</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>Productos farmacéuticos que contienen sustancias que pueden generar dependencia, abuso o mal uso, incluidos en el listado definido por la Resolución 1478 de 2006 o normas complementarias.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <i class="fas fa-recycle"></i>
+                            <h4>Punto Azul</h4>
+                            <p>(Haz clic para ver el detalle)</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>Contenedores ubicados en droguerías y almacenes para depositar medicamentos vencidos, parcialmente consumidos o deteriorados por el consumidor final.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tip">
+                <strong>📚 Recordatorio:</strong> La terminología precisa evita confusiones y garantiza que todos hablen el mismo idioma en el proceso de gestión de medicamentos.
+            </div>
+        </section>
+
+        <section data-index="3">
+            <h2>4. Personal Involucrado y Responsabilidades</h2>
+            <p>Cada rol tiene responsabilidades específicas para asegurar la seguridad y eficacia del manejo de medicamentos.</p>
+            <div class="flip-cards-container">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <i class="fas fa-user-shield"></i>
+                            <h4>Responsable Designado</h4>
+                            <p>(Haz clic para ver el detalle)</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <p><strong>(Auxiliares de enfermería):</strong> Encargado principal del almacenamiento, entrega y administración de medicamentos. Responsable de la seguridad y custodia. Controla existencias e inventarios, verifica condiciones de almacenamiento y asegura el cumplimiento de los "Cinco Correctos".</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <i class="fas fa-user-friends"></i>
+                            <h4>Auxiliares y Formadores</h4>
+                            <p>(Haz clic para ver el detalle)</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>Pueden participar en el manejo y administración de medicamentos bajo la supervisión y lineamientos del responsable designado. Deben seguir los procedimientos documentados para la administración y las prácticas higiénicas.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <i class="fas fa-users"></i>
+                            <h4>Todo el Personal</h4>
+                            <p>(Haz clic para ver el detalle)</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>Deben informar cualquier evento relacionado con la medicación (ej. sospecha de reacciones adversas, errores de medicación). Deben manejar la información con criterio de confidencialidad.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tip">
+                <strong>🤝 Colaboración:</strong> La responsabilidad compartida y la comunicación efectiva son esenciales para la seguridad del paciente. ¡Tu observación es clave!
+            </div>
+        </section>
+
+        <section data-index="4">
+            <h2>5. Procedimiento para el Manejo de Medicamentos</h2>
+            <p>A continuación, se detallan los pasos clave para la gestión de medicamentos, desde su recepción hasta su disposición final.</p>
+            <h3>5.1 Recepción de Medicamentos</h3>
+            <ul>
+                <li>Al recibir medicamentos dispensados por la EAPB, verificar que correspondan a la prescripción médica vigente de la beneficiaria.</li>
+                <li>Asegurarse de contar con la fórmula médica física o soporte equivalente que respalde el medicamento, especificando nombre de la beneficiaria, fecha, nombre del medicamento, dosis, vía, frecuencia y firma del médico.</li>
+                <li>Registrar la recepción en el sistema o formato interno del operador.</li>
+            </ul>
+            <div class="tip">
+                <strong>🔍 Verificación:</strong> La recepción es el primer punto de control. Una verificación exhaustiva aquí previene errores desde el inicio.
+            </div>
+        </section>
+
+        <section data-index="5">
+            <h2>5.2 Almacenamiento de Medicamentos</h2>
+            <p>El almacenamiento adecuado garantiza la conservación y la seguridad de los medicamentos.</p>
+            <div class="flip-cards-container">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <i class="fas fa-warehouse"></i>
+                            <h4>Área Designada</h4>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>Los medicamentos y dispositivos médicos deben almacenarse en un ambiente independiente, diferenciado y señalizado.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <i class="fas fa-cloud-sun"></i>
+                            <h4>Condiciones Ambientales</h4>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>Ventilación adecuada (natural o artificial, evitando polvo/suciedad), iluminación (natural o artificial, evitando luz solar directa). Pisos, paredes y techos fáciles de limpiar y resistentes.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <i class="fas fa-boxes"></i>
+                            <h4>Organización</h4>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>Organizar para minimizar confusiones, pérdidas y vencimientos. Separar medicamentos por beneficiaria es fundamental.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <i class="fas fa-calendar-alt"></i>
+                            <h4>Control de Vencimiento</h4>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>Implementar un sistema de control de fechas de vencimiento (ej. semaforización). Verificar regularmente para asegurar que no haya medicamentos vencidos.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <i class="fas fa-lock"></i>
+                            <h4>Seguridad</h4>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>Medicamentos deben almacenarse fuera del alcance de las beneficiarias. Medicamentos de control especial deben estar bajo llave o medio que restrinja el acceso solo al personal autorizado, cumpliendo condiciones de temperatura y humedad si aplica.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tip">
+                <strong>🔒 Seguridad:</strong> Un almacenamiento correcto no solo preserva la calidad del medicamento, sino que también previene riesgos y asegura la integridad del proceso.
+            </div>
+        </section>
+
+        <section data-index="6">
+            <h2>5.3 Administración de Medicamentos</h2>
+            <p>La administración es un momento crítico que requiere máxima atención a los detalles.</p>
+            <ul>
+                <li>Administrar únicamente medicamentos de uso ambulatorio que hayan sido prescritos por la EAPB. No se deben administrar medicamentos de uso hospitalario.</li>
+                <li>Antes de cada administración, verificar rigurosamente los <strong>"Cinco Correctos"</strong>: Usuario correcto, Medicamento correcto, Dosis correcta, Hora correcta, Vía correcta.</li>
+                <li>Seguir estrictamente la dosis, vía de administración, frecuencia y duración indicadas en la fórmula médica.</li>
+                <li>Bajo ninguna circunstancia un medicamento prescrito para una beneficiaria debe ser usado por otro.</li>
+                <li><strong>Registro de Suministro:</strong> Registrar inmediatamente después de la administración en el formato o herramienta dispuesta, incluyendo: nombre de la beneficiaria, medicamento, hora, fecha de suministro y nombre y firma de quien lo suministra. Este registro también debe quedar en el anexo de la historia de atención.</li>
+            </ul>
+            <p>Si la beneficiaria requiere atención médica (urgencias, salud física/mental, rehabilitación, etc.), se debe gestionar la atención y dejar soporte. Las citas médicas y terapéuticas ordenadas por la EAPB no deben ser sustituidas por profesionales del operador.</p>
+            <div class="tip">
+                <strong>✅ La Regla de Oro:</strong> Los "Cinco Correctos" son tu checklist esencial. ¡No saltes ningún paso!
+            </div>
+        </section>
+
+        <section data-index="7">
+            <h2>5.4 Documentación y Registros</h2>
+            <p>Una documentación precisa y organizada es vital para el seguimiento y la trazabilidad.</p>
+            <ul>
+                <li>Mantener un archivo organizado de las fórmulas médicas de cada beneficiaria.</li>
+                <li>Llevar el registro del suministro de medicamentos según lo establecido.</li>
+                <li>Contar con un procedimiento escrito sobre las actividades de almacenamiento, administración y disposición final de medicamentos.</li>
+                <li>Todas las actuaciones o acciones relacionadas con medicamentos deben quedar registradas en el anexo de la historia de atención de la beneficiaria. Los registros deben ser claros, legibles, sin tachones ni enmendaduras, sin espacios en blanco y sin siglas, y deben incluir fecha, nombre completo, profesión y firma del autor.</li>
+                <li>El archivo de historias de atención debe estar disponible en el lugar donde se encuentra la beneficiaria, resguardado para garantizar su confidencialidad y uso restringido a personal autorizado, contando con un sistema de custodia, conservación e identificación por beneficiario.</li>
+            </ul>
+            <div class="tip">
+                <strong>✍️ Precisión:</strong> La documentación no es solo un requisito, es una herramienta clave para la continuidad del cuidado y la seguridad jurídica. ¡Cada detalle cuenta!
+            </div>
+        </section>
+
+        <section data-index="8">
+            <h2>5.5 Monitoreo y Seguimiento</h2>
+            <p>La observación post-administración es crucial para detectar posibles reacciones y actuar a tiempo.</p>
+            <ul>
+                <li>Observar a la beneficiaria después de la administración de medicamentos para identificar posibles reacciones adversas.</li>
+                <li>Ante la sospecha de una reacción adversa, consultar de inmediato al médico tratante.</li>
+                <li>Si es necesario, realizar el reporte correspondiente ante las entidades competentes (ej. INVIMA).</li>
+            </ul>
+            <div class="tip">
+                <strong>👀 Alerta:</strong> El monitoreo continuo te permite identificar rápidamente cualquier anomalía y asegurar la seguridad de la beneficiaria.
+            </div>
+        </section>
+
+        <section data-index="9">
+            <h2>5.6 Disposición Final de Medicamentos</h2>
+            <p>La gestión adecuada de los residuos farmacéuticos es una responsabilidad ambiental y de salud pública.</p>
+            <ul>
+                <li>Cuando un medicamento expire o haya sobrantes (por suspensión médica o egreso definitivo de la beneficiaria), se debe realizar su disposición final de acuerdo con la normatividad vigente.</li>
+                <li>Se recomienda utilizar los Puntos Azules disponibles para la correcta gestión de residuos de medicamentos.</li>
+                <li>Debe existir un proceso documentado para la disposición final.</li>
+            </ul>
+            <div class="tip">
+                <strong>♻️ Cuidado Ambiental:</strong> La disposición correcta protege el medio ambiente y evita riesgos de contaminación o mal uso de medicamentos.
+            </div>
+        </section>
+
+        <section data-index="10">
+            <h2>6. Cumplimiento y Capacitación</h2>
+            <p>El compromiso con el protocolo es fundamental para su éxito.</p>
+            <ul>
+                <li>El personal debe adherirse a este protocolo.</li>
+                <li>Se realizarán capacitaciones periódicas sobre prácticas de almacenamiento y uso adecuado de medicamentos.</li>
+                <li>En caso de dudas o dificultades, se debe solicitar apoyo y asesoría a las autoridades de salud competentes.</li>
+            </ul>
+            <div class="tip">
+                <strong>🎓 Formación Continua:</strong> Mantente actualizado y no dudes en buscar apoyo. La capacitación es clave para un desempeño excelente.
+            </div>
+        </section>
+
+        <section data-index="11">
+            <h2>7. Referencias</h2>
+            <p>Las siguientes referencias respaldan este protocolo:</p>
+            <ul>
+                <li>Instrumento verificación</li>
+                <li>vf-documento-proteccion-icbf.pdf</li>
+            </ul>
+            <div class="tip">
+                <strong>📖 Fundamentación:</strong> Los documentos de referencia son la base legal y técnica de nuestras prácticas. Consulta siempre las fuentes oficiales.
+            </div>
+        </section>
+
+        <section data-index="12" id="quiz-section">
+            <h2>¡Es hora de poner a prueba tus conocimientos!</h2>
+            <p>Completa tus datos y responde las siguientes preguntas para evaluar lo aprendido en la capacitación.</p>
+
+            <form id="quizForm">
+                <div class="registration-field">
+                    <label for="nombreCompleto">Nombre Completo:</label>
+                    <input type="text" id="nombreCompleto" name="nombreCompleto" required>
+                </div>
+
+                <div class="registration-field">
+                    <label for="cargo">Cargo:</label>
+                    <select id="cargo" name="cargo" required>
+                        <option value="">Seleccione su cargo</option>
+                        <option value="Auxiliar de enfermeria">1. Auxiliar de enfermería</option>
+                        <option value="Formador">2. Formador</option>
+                        <option value="Gestor de caso">3. Gestor de caso</option>
+                        <option value="Otro">4. Otro</option>
+                    </select>
+                </div>
+
+                <div class="registration-field" id="otroCargoContainer" style="display: none;">
+                    <label for="otroCargoEspecificar">Especifique cuál cargo:</label>
+                    <input type="text" id="otroCargoEspecificar" name="otroCargoEspecificar">
+                </div>
+
+                <div class="registration-field">
+                    <label for="fechaRegistro">Fecha de Registro:</label>
+                    <input type="date" id="fechaRegistro" name="fechaRegistro" required>
+                </div>
+
+                <div class="registration-field">
+                    <label for="horaRegistro">Hora de Registro:</label>
+                    <input type="time" id="horaRegistro" name="horaRegistro" required>
+                </div>
+                
+                <div class="quiz-question">
+                    <p>1. ¿Cuál es el objetivo principal de este protocolo?</p>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q1" value="a"> a) Gestionar las finanzas de la institución.</label>
+                        <label><input type="radio" name="q1" value="b"> b) Orientar al personal sobre el manejo de medicamentos para beneficiarias.</label>
+                        <label><input type="radio" name="q1" value="c"> c) Organizar actividades recreativas.</label>
+                        <label><input type="radio" name="q1" value="d"> d) Definir los horarios del personal.</label>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p>2. ¿A quién aplica principalmente este protocolo?</p>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q2" value="a"> a) Solo a los médicos.</label>
+                        <label><input type="radio" name="q2" value="b"> b) Solo a las enfermeras.</label>
+                        <label><input type="radio" name="q2" value="c"> c) A todo el personal involucrado en el manejo de medicamentos.</label>
+                        <label><input type="radio" name="q2" value="d"> d) Solo a las beneficiarias.</label>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p>3. ¿A qué se refieren los "Cinco Correctos"?</p>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q3" value="a"> a) Cinco formas correctas de almacenar medicamentos.</label>
+                        <label><input type="radio" name="q3" value="b"> b) Cinco momentos correctos para tomar un medicamento.</label>
+                        <label><input type="radio" name="q3" value="c"> c) Cinco elementos mínimos a verificar antes de administrar un medicamento.</label>
+                        <label><input type="radio" name="q3" value="d"> d) Cinco formas correctas de desechar medicamentos.</label>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p>4. ¿Qué característica principal tienen los "Medicamentos de control especial"?</p>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q4" value="a"> a) Son medicamentos de venta libre comunes.</label>
+                        <label><input type="radio" name="q4" value="b"> b) Solo pueden ser administrados por médicos.</label>
+                        <label><input type="radio" name="q4" value="c"> c) Contienen sustancias que pueden generar dependencia, abuso o mal uso.</label>
+                        <label><input type="radio" name="q4" value="d"> d) Son solo para uso hospitalario.</label>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p>5. ¿Quién es el principal responsable del almacenamiento y custodia de los medicamentos?</p>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q5" value="a"> a) Todo el personal.</label>
+                        <label><input type="radio" name="q5" value="b"> b) Los formadores.</label>
+                        <label><input type="radio" name="q5" value="c"> c) El Responsable Designado (Auxiliares de enfermería).</label>
+                        <label><input type="radio" name="q5" value="d"> d) Las beneficiarias.</label>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p>6. ¿Qué es crucial para el almacenamiento de medicamentos con respecto a las beneficiarias?</p>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q6" value="a"> a) Los medicamentos pueden guardarse en las habitaciones de las beneficiarias.</label>
+                        <label><input type="radio" name="q6" value="b"> b) Deben almacenarse fuera del alcance de las beneficiarias.</label>
+                        <label><input type="radio" name="q6" value="c"> c) Deben guardarse en áreas compartidas.</label>
+                        <label><input type="radio" name="q6" value="d"> d) Deben conservarse en la cocina.</label>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p>7. ¿Bajo qué circunstancia se debe usar un medicamento prescrito para una beneficiaria en otra?</p>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q7" value="a"> a) Si tienen síntomas similares.</label>
+                        <label><input type="radio" name="q7" value="b"> b) Nunca.</label>
+                        <label><input type="radio" name="q7" value="c"> c) Si un médico lo autoriza verbalmente.</label>
+                        <label><input type="radio" name="q7" value="d"> d) Solo en casos de emergencia.</label>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p>8. ¿Qué información debe registrarse inmediatamente después de la administración de un medicamento?</p>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q8" value="a"> a) Solo el nombre de la beneficiaria.</label>
+                        <label><input type="radio" name="q8" value="b"> b) Nombre de la beneficiaria, medicamento, hora, fecha y nombre/firma del administrador.</label>
+                        <label><input type="radio" name="q8" value="c"> c) Solo el tipo de enfermedad.</label>
+                        <label><input type="radio" name="q8" value="d"> d) Solo la dosis.</label>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p>9. ¿Qué se debe hacer si se sospecha una reacción adversa a un medicamento?</p>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q9" value="a"> a) Esperar hasta el día siguiente.</label>
+                        <label><input type="radio" name="q9" value="b"> b) Consultar de inmediato al médico tratante.</label>
+                        <label><input type="radio" name="q9" value="c"> c) Administrar otro medicamento.</label>
+                        <label><input type="radio" name="q9" value="d"> d) Informar a la familia primero.</label>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p>10. ¿Qué se recomienda para la disposición final de medicamentos vencidos o sobrantes?</p>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q10" value="a"> a) Tirarlos a la basura común.</label>
+                        <label><input type="radio" name="q10" value="b"> b) Arrojarlos por el inodoro.</label>
+                        <label><input type="radio" name="q10" value="c"> c) Utilizar los "Puntos Azules".</label>
+                        <label><input type="radio" name="q10" value="d"> d) Entregarlos a otras instituciones.</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="quiz-submit-button">Enviar Respuestas</button>
+            </form>
+            <div id="quiz-feedback"></div>
+        </section>
+
+        <div class="navigation-buttons">
+            <button id="prevBtn" disabled>Anterior</button>
+            <button id="nextBtn">Siguiente</button>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 CONGREGACION SIERVAS DE CRISTO SACERDOTE</p>
+        <p>HOGAR SAGRADA FAMILIA BOGOTÁ</p>
+        <p>NIT 860007314-1</p>
+        <p>Carrera 8 #1D-25. Tel.: 7431978 - 3103174793.</p>
+        <p>Email: <a href="mailto:hogarsagradafam@gmail.com" style="color: #f0f0f0;">hogarsagradafam@gmail.com</a></p>
+        <p>Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        const sections = document.querySelectorAll('main section');
+        const progressBar = document.getElementById('progressBar');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const quizForm = document.getElementById('quizForm');
+        const quizFeedback = document.getElementById('quiz-feedback');
+        const cargoSelect = document.getElementById('cargo');
+        const otroCargoContainer = document.getElementById('otroCargoContainer');
+        const otroCargoEspecificarInput = document.getElementById('otroCargoEspecificar');
+
+
+        let currentSectionIndex = 0;
+
+        const totalSections = sections.length;
+        // Exclude the quiz section from "completion" percentage for the 'Siguiente' button change logic
+        const totalContentSections = totalSections - 1; 
+
+        // Function to update the progress bar
+        function updateProgressBar() {
+            const progress = (currentSectionIndex / totalContentSections) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressBar.textContent = `${Math.round(progress)}% Completado`;
+
+            if (currentSectionIndex === totalSections -1) { // If it's the quiz section
+                 progressBar.textContent = `¡Casi listo! Evaluación Final`;
+            } else if (currentSectionIndex === totalContentSections -1) { // If it's the last content section
+                progressBar.style.width = `100%`;
+                progressBar.textContent = `100% Completado`;
+            }
+        }
+
+        // Function to show a specific section
+        function showSection(index) {
+            sections.forEach((section, i) => {
+                section.classList.remove('active');
+                if (i === index) {
+                    section.classList.add('active');
+                }
+            });
+            currentSectionIndex = index;
+            updateNavigationButtons();
+            updateProgressBar();
+            // Scroll to top of the main content area, not the absolute page top, to keep header visible.
+            document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Function to update navigation button states
+        function updateNavigationButtons() {
+            prevBtn.disabled = currentSectionIndex === 0;
+
+            if (currentSectionIndex === totalContentSections) { // Last content section (before quiz)
+                nextBtn.textContent = 'Ir a la Evaluación';
+            } else if (currentSectionIndex === totalSections -1) { // Quiz section
+                nextBtn.disabled = true; 
+                nextBtn.textContent = 'Evaluación Finalizada'; 
+            }
+            else {
+                nextBtn.textContent = 'Siguiente';
+                nextBtn.disabled = false;
+            }
+        }
+        
+        // Show/hide "Otro Cargo" field
+        cargoSelect.addEventListener('change', function() {
+            if (this.value === 'Otro') {
+                otroCargoContainer.style.display = 'block';
+                otroCargoEspecificarInput.required = true;
+            } else {
+                otroCargoContainer.style.display = 'none';
+                otroCargoEspecificarInput.required = false;
+                otroCargoEspecificarInput.value = ''; // Clear if hidden
+            }
+        });
+
+
+        // Event Listeners for Navigation Buttons
+        prevBtn.addEventListener('click', () => {
+            if (currentSectionIndex > 0) {
+                showSection(currentSectionIndex - 1);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentSectionIndex < totalSections - 1) {
+                showSection(currentSectionIndex + 1);
+            }
+        });
+
+        // Quiz Submission Handler
+        quizForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(quizForm);
+            const answers = {};
+            
+            // Get registration data
+            answers.nombreCompleto = formData.get('nombreCompleto');
+            answers.cargo = formData.get('cargo');
+            if (answers.cargo === 'Otro') {
+                answers.otroCargoEspecificar = formData.get('otroCargoEspecificar');
+            } else {
+                answers.otroCargoEspecificar = ''; // Ensure it's blank if not "Otro"
+            }
+            answers.fechaRegistro = formData.get('fechaRegistro');
+            answers.horaRegistro = formData.get('horaRegistro');
+
+
+            // Get quiz answers
+            for (let i = 1; i <= 10; i++) {
+                const selectedOption = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selectedOption) {
+                    answers[`q${i}`] = selectedOption.value;
+                } else {
+                    // Optional: Alert if a question is not answered
+                    // alert(`Por favor, responde la pregunta ${i}.`);
+                    // return; // Stop submission if any question is not answered
+                    answers[`q${i}`] = ''; // Send empty if not answered
+                }
+            }
+
+            // TODO: Replace with your Google Apps Script WebApp deployment URL
+            // This URL is obtained after deploying your Google Apps Script as a Web App
+            const webAppUrl = 'https://script.google.com/macros/s/AKfycbxBs6sB7oenkX66Vmjf6PWOVRv3uSv0yHUcFgjljGZYxwrYwg06lW-u-Ce_Hm5P3iBBQg/exec'; 
+
+            // Show a "sending" message
+            quizFeedback.textContent = 'Enviando respuestas...';
+            quizFeedback.className = ''; // Neutral class
+            quizFeedback.style.display = 'block';
+
+
+            try {
+                const response = await fetch(webAppUrl, {
+                    method: 'POST',
+                    mode: 'no-cors', // Use 'no-cors' for simple POST requests to Apps Script
+                    headers: {
+                        // 'Content-Type': 'application/json', // Not needed with FormData and no-cors for simple text post
+                    },
+                    // To send as x-www-form-urlencoded (which Apps Script handles well with e.parameter)
+                    // we need to build a URLSearchParams object or send plain text.
+                    // For simplicity with no-cors, let's stringify and the Apps Script will parse.
+                    // However, the original code used JSON.stringify(answers) which is fine if Apps Script parses e.postData.contents
+                    body: JSON.stringify(answers), // Send as JSON
+                });
+
+                quizFeedback.textContent = '¡Respuestas enviadas con éxito! Gracias por completar la evaluación.';
+                quizFeedback.className = 'success';
+                quizFeedback.style.display = 'block';
+
+                quizForm.querySelector('button[type="submit"]').disabled = true;
+                nextBtn.disabled = true; 
+                
+            } catch (error) {
+                console.error('Error al enviar el quiz:', error);
+                quizFeedback.textContent = 'Hubo un error al enviar tus respuestas. Por favor, revisa tu conexión e intenta de nuevo. Si el problema persiste, contacta al administrador.';
+                quizFeedback.className = 'error';
+                quizFeedback.style.display = 'block';
+            }
+        });
+
+        // Initialize the course
+        showSection(0); // Display the first section on load
+        
+        // Set default date and time for registration fields
+        function setDefaultDateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+
+            document.getElementById('fechaRegistro').value = `${year}-${month}-${day}`;
+            document.getElementById('horaRegistro').value = `${hours}:${minutes}`;
+        }
+        setDefaultDateTime();
+
+
+    </script>
+</body>
+</html>
